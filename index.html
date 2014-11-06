@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Mod zeropush by ZeroPush</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Mod zeropush</h1>
+        <p>eJabberd module for sending push notifications via ZeroPush</p>
+
+        <p class="view"><a href="https://github.com/ZeroPush/mod_zeropush">View the Project on GitHub <small>ZeroPush/mod_zeropush</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/ZeroPush/mod_zeropush/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ZeroPush/mod_zeropush/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ZeroPush/mod_zeropush">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="purpose" class="anchor" href="#purpose" aria-hidden="true"><span class="octicon octicon-link"></span></a>Purpose:</h1>
+
+<p>mod_zeropush sends an API request to ZeroPush when a message is sent to an offline user.</p>
+
+<p>The notification contains the following URI-encoded payload:</p>
+
+<div class="highlight highlight-json"><pre>{
+    <span class="s2">"auth_token"</span>: <span class="s2">"{config-auth_token}"</span>,
+    <span class="s2">"channel"</span>: <span class="s2">"{recipient-jid}"</span>,
+    <span class="s2">"alert"</span>: <span class="s2">"{chat-message-body}"</span>,
+    <span class="s2">"badge"</span>: <span class="s2">"+1"</span>,
+    <span class="s2">"sound"</span>: <span class="s2">"{config-sound}"</span>,
+    <span class="s2">"info"</span>: {
+        <span class="s2">"from"</span>: <span class="s2">"{sender-jid}"</span>
+    }
+}</pre></div>
+
+<h1>
+<a id="caveats" class="anchor" href="#caveats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Caveats:</h1>
+
+<p>mod_zeropush assumes that you have created broadcast channels with the user's jabber id that represent the devices you would like to notify.</p>
+
+<p>Please read <a href="https://zeropush.com/documentation/api_reference#register">register</a> and <a href="https://zeropush.com/documentation/api_reference#subscribe">subscribe</a> how to use broadcast channels.</p>
+
+<h1>
+<a id="note" class="anchor" href="#note" aria-hidden="true"><span class="octicon octicon-link"></span></a>Note:</h1>
+
+<p>Between ejabberd 2.1.13 and 13.10 there were significant changes and modules compiled for one version don't directly work with the other version.
+Checkout the branch that corresponds to the version of ejabberd that you are running.</p>
+
+<h1>
+<a id="installing" class="anchor" href="#installing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing:</h1>
+
+<ul>
+<li>Make sure you have erlang installed on the machine you are building from
+
+<ul>
+<li>You probably want this to be the same machine you intend to install/run ejabberd on. I'm not sure about the interoperability of ejabberd/erlang versions.</li>
+</ul>
+</li>
+<li>Open the Emakefile and change <code>/usr/local/Cellar/ejabberd/2.1.13/lib/ejabberd/include</code> to the correct path on your machine</li>
+<li>Run the <code>./build.sh</code> to build <code>*.beam</code> files</li>
+<li>Copy the <code>*.beam</code> files from the <code>ebin</code> directory to the location where the other modules are for your server</li>
+<li>Add the configuration from below</li>
+</ul>
+
+<h1>
+<a id="ejabberd-1310" class="anchor" href="#ejabberd-1310" aria-hidden="true"><span class="octicon octicon-link"></span></a>eJabberd 13.10</h1>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>in <code>ejabberd.yml</code></p>
+
+<div class="highlight highlight-yml"><pre><span class="sh"><span class="nt">mod_zeropush<span class="o">:</span></span><span class="sh"></span></span>
+    <span class="sh"><span class="nt">sound<span class="o">:</span></span> <span class="s2">"default"</span></span>
+    <span class="sh"><span class="nt">auth_token<span class="o">:</span></span> <span class="s2">"your-auth-token"</span></span>
+    <span class="sh"><span class="nt">post_url<span class="o">:</span></span> <span class="s2">"https://api.zeropush.com/broadcast"</span></span></pre></div>
+
+<h1>
+<a id="ejabberd-2113" class="anchor" href="#ejabberd-2113" aria-hidden="true"><span class="octicon octicon-link"></span></a>eJabberd 2.1.13</h1>
+
+<h2>
+<a id="configuration-1" class="anchor" href="#configuration-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>in <code>ejabberd.cfg</code></p>
+
+<div class="highlight highlight-erlang"><pre>{<span class="ss">mod_zeropush</span>, [
+    {<span class="ss">sound</span>, <span class="s2">"default"</span>},
+    {<span class="ss">auth_token</span>, <span class="s2">"your-auth-token"</span>},
+    {<span class="ss">post_url</span>, <span class="s2">"https://api.zeropush.com/broadcast"</span>}
+]}</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/ZeroPush">ZeroPush</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
