@@ -46,8 +46,7 @@ start(Host, _Opts) ->
     ok.
 
 stop(Host) ->
-    ejabberd_hooks:delete(offline_message_hook, Host,
-			  ?MODULE, send_notice, 10),
+    ejabberd_hooks:delete(offline_message_hook, Host, ?MODULE, send_notice, 10),
     ok.
 
 send_notice(From, To, Packet) ->
@@ -58,10 +57,10 @@ send_notice(From, To, Packet) ->
     PostUrl = gen_mod:get_module_opt(To#jid.lserver, ?MODULE, post_url, [] ),
 
     if (Type == <<"chat">>) and (Body /= <<"">>) ->
-	      Sep = "&",
+        Sep = "&",
         Post = [
           "alert=", url_encode(binary_to_list(Body)), Sep,
-					"badge=", url_encode("+1"), Sep,
+          "badge=", url_encode("+1"), Sep,
           "sound=", Sound, Sep,
           "channel=", To#jid.luser, Sep,
           "info[from]=", From#jid.luser, Sep,
