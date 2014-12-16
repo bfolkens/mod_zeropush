@@ -40,35 +40,32 @@
 -include("jlib.hrl").
 
 start(Host, _Opts) ->
-    ?INFO_MSG("Starting mod_zeropush for host \"~s\"", [Host] ),
     inets:start(),
     ssl:start(),
     ejabberd_hooks:add(offline_message_hook, Host, ?MODULE, send_notice, 10),
     ok.
 
 stop(Host) ->
-    ?INFO_MSG("Stopping mod_zeropush for host \"~s\"", [Host] ),
     ejabberd_hooks:delete(offline_message_hook, Host,
 			  ?MODULE, send_notice, 10),
     ok.
 
 send_notice(From, To, Packet) ->
-    Type = xml:get_tag_attr_s("type", Packet),
-    Body = xml:get_path_s(Packet, [{elem, "body"}, cdata]),
+    Type = xml:get_tag_attr_s(<<"type">>, Packet),
+    Body = xml:get_path_s(Packet, [{elem, <<"body">>}, cdata]),
     Token = gen_mod:get_module_opt(To#jid.lserver, ?MODULE, auth_token, [] ),
     Sound = gen_mod:get_module_opt(To#jid.lserver, ?MODULE, sound, [] ),
     PostUrl = gen_mod:get_module_opt(To#jid.lserver, ?MODULE, post_url, [] ),
 
-    if (Type == "chat") and (Body /= "") ->
+    if (Type == <<"chat">>) and (Body /= <<"">>) ->
 	      Sep = "&",
         Post = [
-          "alert=", url_encode(Body), Sep,
+          "alert=", url_encode(binary_to_list(Body)), Sep,
 					"badge=", url_encode("+1"), Sep,
           "sound=", Sound, Sep,
           "channel=", To#jid.luser, Sep,
           "info[from]=", From#jid.luser, Sep,
           "auth_token=", Token],
-        ?INFO_MSG("Sending post request to ~s with body \"~s\"", [PostUrl, Post]),
         httpc:request(post, {PostUrl, [], "application/x-www-form-urlencoded", list_to_binary(Post)},[],[]),
         ok;
       true ->
