@@ -61,10 +61,10 @@ send_notice(From, To, Packet) ->
 	      Sep = "&",
         Post = [
           "alert=", url_encode(binary_to_list(Body)), Sep,
-					"badge=", url_encode("+1"), Sep,
-          "sound=", Sound, Sep,
-          "channel=", To#jid.luser, Sep,
-          "info[from]=", From#jid.luser, Sep,
+          "badge=", url_encode("+1"), Sep,
+          "sound=", url_encode(binary_to_list(Sound)), Sep,
+          "channel=", url_encode(binary_to_list(To#jid.luser)), Sep,
+          "info[from]=", url_encode(binary_to_list(From#jid.luser)), Sep,
           "auth_token=", Token],
         httpc:request(post, {binary_to_list(PostUrl), [], "application/x-www-form-urlencoded", list_to_binary(Post)},[],[]),
         ok;
